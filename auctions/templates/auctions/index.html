@@ -1,0 +1,39 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>Active Listings</h2>
+
+{% if message %}
+<div class="alert alert-secondary" role="alert">{{ message }}</div>
+{% endif %}
+
+{% for listing in listings %}
+<a href="/listing/{{listing.id}}" style="text-decoration: none;color: black;">
+  <div class="row border" style="padding: 10px;">
+    <div class="col-md-7">
+      {% if listing.main_img%}
+      <img style="max-width: 40%; height: auto;" class="img-fluid rounded mb-3 mb-md-0"
+        src="{{MEDIA_URL}}{{listing.main_img}}" alt="">
+      {%endif%}
+    </div>
+    <div class="col-md-5">
+      <h3>{{listing.name}}</h3>
+      <p>{{listing.desc}}</p>
+      {% if listing.category is not none%}
+      Category: {{listing.category.name}}<p></p>
+      {%endif%}
+      <p style="padding-top: 10px;"><b>Price: </b>
+        {% if listing.last_bid%}
+        {{listing.last_bid}}
+        {% else %}
+        {{listing.starting_bid}}
+        {% endif %}
+        €</p>
+      <p class="text-secondary">Created {{listing.date_created}}</p>
+    </div>
+  </div>
+</a>
+{% empty %}
+Nothing to show!
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+<h2>Listing: {{listing.name}}</h2>
+
+{% if message %}
+<div class="alert alert-secondary" role="alert">{{ message }}</div>
+{% endif %}
+
+<div class="container" style="padding: 10px;">
+    <div class="row">
+
+        <div class="col-md-8">
+            {% if listing.main_img%}
+            <img style="max-width: 70%; height: auto;" class="img-fluid rounded" src="{{MEDIA_URL}}{{listing.main_img}}"
+                alt="">
+            {% endif %}
+            {% if user.is_authenticated %}
+            <form action="" method="post">
+                {% csrf_token %}
+                
+                <input class="btn btn-secondary" style="margin-top: 18px;" type="submit" name="watchlist" value="Watchlist" />
+            </form>
+        {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <h3 class="my-3">{% if listing.last_bid%}
+                {{listing.last_bid}}
+                {% else %}
+                {{listing.starting_bid}}
+                {% endif %}
+                €</h3>
+            <hr>
+            {% if listing.category is not none%}
+            <h3 class="my-3">Category</h3>
+            {{listing.category.name}}
+            {%endif%}
+            {% if listing.desc%}
+            <h3 class="my-3">Details</h3>
+            Listed by {{listing_user}}
+            <p>{{listing.desc}}</p>
+            {%endif%}
+            <hr>
+            {% if user.is_authenticated %}
+
+            <p>{{numBids}} bid(s) so far. 
+                {%if bid_is_current_bid is 1%} 
+                Your bid is the current bid.
+                {%endif%}
+            </p>
+            <form action="" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <input class="form-control" type="number" step=".01" min="0" name="bid" required placeholder="Bid">
+                </div>
+                <input class="btn btn-primary" type="submit" name="makebid" value="Place Bid" />
+            </form>
+            {% if username == listing_user %}
+            <form action="" method="post">
+                {% csrf_token %}
+                <input class="btn btn-danger" type="submit" name="closeauction" value="Close Auction" />
+            </form>
+            {% endif %}
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

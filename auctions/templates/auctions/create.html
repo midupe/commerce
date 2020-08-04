@@ -1,0 +1,37 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h2>Create Listing</h2>
+
+{% if message %}
+<div class="alert alert-secondary" role="alert">{{ message }}</div>
+{% endif %}
+
+<form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-group">
+        <input autofocus class="form-control" type="text" name="title" placeholder="Title" required>
+    </div>
+    <div class="form-group">
+        <input class="form-control" type="number" step=".01" min="0" name="starting_bid" placeholder="Starting Bid" required>
+    </div>
+    <div class="form-group">
+        <textarea class="form-control" name="desc" placeholder="Description (optional)"></textarea>
+    </div>
+    {% if categories %}
+    <div class="form-group">
+        <select class="form-control" name="category">
+            <option value="null" selected>Category (optional)</option>
+            {% for category in categories%}
+            <option value="{{ category.name }}">{{ category.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endif %}
+    <div class="form-group">
+        <label for="img">Image (optional)</label><br>
+        <input id="img" type="file" name="img" accept=".png,.jpg,.jpeg">
+    </div>
+    <input class="btn btn-primary" type="submit" value="Create">
+</form>
+{% endblock %}

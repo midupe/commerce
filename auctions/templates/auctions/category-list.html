@@ -1,0 +1,62 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+
+.sidebar {
+  margin: 0;
+  padding: 0;
+  width: 240px;
+  background-color: #E5E5E5;
+  position: absolute;
+  height: 100%;
+  overflow: auto;
+}
+
+.sidebar a {
+  display: block;
+  color: black;
+  padding: 6px 8px 6px 16px;
+  font-size: 20px;
+  text-decoration: none;
+}
+
+.sidebar a:hover:not(.active) {
+  background-color: #555;
+  color: white;
+}
+
+div.content {
+  margin-left: 240px;
+  padding: 1px 16px;
+  height: 100%;
+}
+
+@media screen and (max-width: 700px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+  .sidebar a {float: left;}
+  div.content {margin-left: 0;}
+}
+
+@media screen and (max-width: 400px) {
+  .sidebar a {
+    text-align: center;
+    float: none;
+  }
+}
+</style>
+
+<div class="sidebar">
+    <h2 style="padding: 10px;">Categories</h2>
+    {% for category in categories %}
+    <a href="category/{{category.name}}">{{category.name}}</a>
+    {% endfor %}
+    <a href="category/undefined">Undefined</a>
+</div>
+
+{% endblock%}
