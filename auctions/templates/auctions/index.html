@@ -1,6 +1,7 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
+{% load humanize %}
 <h2>Active Listings</h2>
 
 {% if message %}
@@ -8,6 +9,7 @@
 {% endif %}
 
 {% for listing in listings %}
+{% if listing.status == "activated"%}
 <a href="/listing/{{listing.id}}" style="text-decoration: none;color: black;">
   <div class="row border" style="padding: 10px;">
     <div class="col-md-7">
@@ -29,10 +31,11 @@
         {{listing.starting_bid}}
         {% endif %}
         €</p>
-      <p class="text-secondary">Created {{listing.date_created}}</p>
+      <p class="text-secondary">Created {{listing.date_created|naturaltime}}</p>
     </div>
   </div>
 </a>
+{%endif%}
 {% empty %}
 Nothing to show!
 {% endfor %}

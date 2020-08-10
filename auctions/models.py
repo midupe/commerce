@@ -11,7 +11,7 @@ class User(AbstractUser):
 
 class Listing(models.Model):
     id = models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')
-    user = models.ForeignKey('User', on_delete=models.CASCADE,)
+    user = models.ForeignKey('User', related_name='owner', on_delete=models.CASCADE,)
     category = models.ForeignKey('Category', null = True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=50)
     main_img = models.ImageField(upload_to=('images/'), null=True)
@@ -19,6 +19,8 @@ class Listing(models.Model):
     starting_bid = models.DecimalField(max_digits=10, decimal_places=2)
     last_bid = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     date_created = models.DateTimeField(default=django.utils.timezone.now, verbose_name='date joined')
+    status = models.CharField(max_length=50, default='activated')
+    winner = models.ForeignKey('User', related_name='winner', on_delete=models.SET_NULL, null = True)
 
 
 class Bid(models.Model):

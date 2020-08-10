@@ -11,7 +11,7 @@ from .models import *
 
 
 def index(request, message=""):
-    listings = Listing.objects.all()
+    listings = Listing.objects.all().order_by('-date_created')
     return render(request, "auctions/index.html", {"listings": listings, "message": message})
 
 
@@ -133,6 +133,13 @@ def listing(request, id):
                     #add to watchlist
                     a = Watchlist.objects.create(user_id=get_user(request), listing = listing)
                     a.save()
+            if 'closeauction' in request.POST:
+                try:
+                    winner = Bid.objects.get(listing=listing, value=listing.last_bid)
+                except:
+                    Listing.objects.filter(id=id).update(status="closed")
+                else:
+                    Listing.objects.filter(id=id).update(status="closed", winner=winner.user_id)
             if 'makebid' in request.POST:
                 bid = float(request.POST["bid"])
                 if listing.last_bid is not None:
@@ -151,17 +158,31 @@ def listing(request, id):
                         message = "Bid created"
                     else:
                         message = "Invalid Bid"
+            if 'comment' in request.POST:
+                comment_text = request.POST["commenttext"]
+                c = Comment.objects.create(text=comment_text ,user_id=get_user(request), listing = listing)
+                c.save()
 
         listing = Listing.objects.get(id=id)
 
+        try:
+            comments = Comment.objects.filter(listing_id=id)
+        except:
+            comments = None
+
         if request.user.is_authenticated:
-            username = request.user.username
+            if listing.status == "closed":
+                if listing.winner == request.user:
+                    message = "Congratulations! You won this auction!"
+                if request.user == listing.user:
+                    message = "User " + listing.winner.username + " won."
+            listingowner = 0
             numBids = len(Bid.objects.filter(listing_id=listing))
             if len(Bid.objects.filter(listing_id=listing, value=listing.last_bid , user_id=get_user(request))) > 0  :
                 bid_is_current_bid = 1
-            return render(request, "auctions/listing.html", {"username": username,"listing": listing, "numBids": numBids, "message": message, "listing_user": listing_user, "bid_is_current_bid": bid_is_current_bid})
+            return render(request, "auctions/listing.html", {"listing": listing, "comments": comments, "numBids": numBids, "message": message, "listing_user": listing_user, "bid_is_current_bid": bid_is_current_bid})
         else:
-            return render(request, "auctions/listing.html", {"listing": listing, "message": message, "listing_user": listing_user, "bid_is_current_bid": bid_is_current_bid})
+            return render(request, "auctions/listing.html", {"listing": listing, "comments": comments, "message": message, "listing_user": listing_user, "bid_is_current_bid": bid_is_current_bid})
 
 def watchlist(request):
     user = get_user(request)

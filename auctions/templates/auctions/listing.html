@@ -1,5 +1,6 @@
 {% extends "auctions/layout.html" %}
 {% block body %}
+{% load humanize %}
 <h2>Listing: {{listing.name}}</h2>
 
 {% if message %}
@@ -17,10 +18,11 @@
             {% if user.is_authenticated %}
             <form action="" method="post">
                 {% csrf_token %}
-                
-                <input class="btn btn-secondary" style="margin-top: 18px;" type="submit" name="watchlist" value="Watchlist" />
+
+                <input class="btn btn-secondary" style="margin-top: 18px;" type="submit" name="watchlist"
+                    value="Watchlist" />
             </form>
-        {% endif %}
+            {% endif %}
         </div>
 
         <div class="col-md-4">
@@ -41,13 +43,20 @@
             <p>{{listing.desc}}</p>
             {%endif%}
             <hr>
+            {% if listing.status == "activated"%}
             {% if user.is_authenticated %}
 
-            <p>{{numBids}} bid(s) so far. 
-                {%if bid_is_current_bid is 1%} 
+            <p>{{numBids}} bid(s) so far.
+                {%if bid_is_current_bid is 1%}
                 Your bid is the current bid.
                 {%endif%}
             </p>
+            {% if user == listing_user %}
+            <form action="" method="post">
+                {% csrf_token %}
+                <input class="btn btn-danger" type="submit" name="closeauction" value="Close Auction" />
+            </form>
+            {% else %}
             <form action="" method="post">
                 {% csrf_token %}
                 <div class="form-group">
@@ -55,15 +64,53 @@
                 </div>
                 <input class="btn btn-primary" type="submit" name="makebid" value="Place Bid" />
             </form>
-            {% if username == listing_user %}
-            <form action="" method="post">
-                {% csrf_token %}
-                <input class="btn btn-danger" type="submit" name="closeauction" value="Close Auction" />
-            </form>
             {% endif %}
+            {% endif %}
+            {% else %}
+            <b>Auction is closed!</b>
             {% endif %}
         </div>
 
+    </div>
+    <div class="comments" style="padding-top: 20px;">
+        <hr>
+        <div class="comment-wrapper">
+            <div class="panel panel-info">
+
+                <div class="panel-heading" style="margin-top: 20px; margin-bottom: 20px;">
+                    <b>Comments</b><br>
+                </div>
+                <div class="panel-body">
+                    {% if user.is_authenticated %}
+                    <form action="" method="post">
+                        {% csrf_token %}
+                        <textarea class="form-control" placeholder="write a comment..." name="commenttext" rows="3" required></textarea>
+                        <br>
+                        <input type="submit" name="comment" class="btn btn-info pull-right" value="Post">
+                    </form>
+                    <div class="clearfix"></div>
+                    <hr>
+                    {% endif %}
+                    <ul class="media-list" style="margin-left: -40px;">
+                        {% for comment in comments %}
+                        <li class="media">
+                            <div class="media-body">
+                                <span class="text-muted pull-right">
+                                    <small class="text-muted">{{comment.date_created |naturaltime}}</small>
+                                </span>
+                                <strong class="text-success">@{{comment.user_id.username}}</strong>
+                                <p>
+                                    {{comment.text}}
+                                </p>
+                            </div>
+                        </li>
+                        {% empty %}
+                        No comments yet!
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
