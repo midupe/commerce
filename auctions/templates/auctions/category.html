@@ -66,6 +66,7 @@
 
 <div class="content">
     {% for listing in listings %}
+    {% if listing.status == "activated" %}
     <a href="/listing/{{listing.id}}" style="text-decoration: none;color: black;">
         <div class="row border" style="padding: 10px;">
             <div class="col-md-7">
@@ -91,6 +92,7 @@
             </div>
         </div>
     </a>
+    {%endif%}
     {% empty %}
     Nothing to show!
     {% endfor %}
